@@ -1,116 +1,108 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Slideshow</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Slideshow</title>
 
-  <style>
-    html, body {
-      margin: 0;
-      padding: 0;
-      width: 100%;
-      height: 100%;
-      background: black;
-      overflow: hidden;
-    }
+<style>
+  html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    background: black;
+    overflow: hidden;
+  }
 
-    .slideshow {
-      position: fixed;
-      inset: 0;
-    }
+  .slideshow {
+    position: fixed;
+    inset: 0;
+  }
 
-    img, video, iframe {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      background: black;
-      display: none;
-      border: none;
-    }
+  img, video, iframe {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: none;
+    background: black;
+    border: none;
+  }
 
-    img, video {
-      object-fit: contain;
-    }
-  </style>
+  img, video {
+    object-fit: contain;
+  }
+</style>
 </head>
+
 <body>
 
-  <div class="slideshow">
-    <img id="media-image">
-    <video id="media-video" muted playsinline>
-      <source id="video-source" type="video/mp4">
-    </video>
-    <iframe id="media-iframe"></iframe>
-  </div>
+<div class="slideshow">
+  <img id="media-image">
+  <video id="media-video" muted playsinline></video>
+  <iframe id="media-iframe" allowfullscreen></iframe>
+</div>
 
-  <script>
-    const playlist = [
-      { type: "video", src: "aiaudit.mp4" },
-      { type: "image", src: "ss1.png", duration: 10000 },
-      {
-        type: "web",
-        src: "https://lookerstudio.google.com/embed/reporting/c89202ab-f65d-4545-afbe-6f4513733be8/page/p_oz84hpwm0d",
-        duration: 15000
-      },
-      { type: "video", src: "cloudcomputing.mp4" },
-      { type: "image", src: "ss2.png", duration: 10000 },
-      { type: "video", src: "privata.mp4" },
-      { type: "image", src: "ss3.png", duration: 10000 },
-      { type: "video", src: "tco.mp4" }
-    ];
+<script>
+const playlist = [
+  { type: "image", src: "ss1.png", duration: 5000 },
+  { type: "video", src: "aiaudit.mp4" },
+  {
+    type: "web",
+    src: "https://lookerstudio.google.com/embed/reporting/c89202ab-f65d-4545-afbe-6f4513733be8/page/p_oz84hpwm0d",
+    duration: 10000
+  }
+];
 
-    let index = 0;
+let index = 0;
 
-    const img = document.getElementById("media-image");
-    const video = document.getElementById("media-video");
-    const videoSource = document.getElementById("video-source");
-    const iframe = document.getElementById("media-iframe");
+const img = document.getElementById("media-image");
+const video = document.getElementById("media-video");
+const iframe = document.getElementById("media-iframe");
 
-    function showMedia() {
-      const item = playlist[index];
+function hideAll() {
+  img.style.display = "none";
+  video.style.display = "none";
+  iframe.style.display = "none";
+}
 
-      img.style.display = "none";
-      video.style.display = "none";
-      iframe.style.display = "none";
+function showMedia() {
+  const item = playlist[index];
+  console.log("Showing:", item);
 
-      video.pause();
-      video.currentTime = 0;
+  hideAll();
 
-      if (item.type === "image") {
-        img.src = item.src;
-        img.style.display = "block";
-        setTimeout(nextMedia, item.duration || 5000);
-      }
+  if (item.type === "image") {
+    img.src = item.src;
+    img.onload = () => {
+      img.style.display = "block";
+      setTimeout(nextMedia, item.duration);
+    };
+    img.onerror = nextMedia;
+  }
 
-      else if (item.type === "video") {
-        videoSource.src = item.src;
-        video.load();
-        video.style.display = "block";
+  else if (item.type === "video") {
+    video.src = item.src;
+    video.style.display = "block";
+    video.play().catch(() => setTimeout(nextMedia, 5000));
+    video.onended = nextMedia;
+  }
 
-        video.play().catch(() => {
-          // 🔑 THIS FIX PREVENTS BLANK SCREEN
-          nextMedia();
-        });
+  else if (item.type === "web") {
+    iframe.src = item.src;
+    iframe.style.display = "block";
+    setTimeout(nextMedia, item.duration);
+  }
+}
 
-        video.onended = nextMedia;
-      }
+function nextMedia() {
+  index = (index + 1) % playlist.length;
+  showMedia();
+}
 
-      else if (item.type === "web") {
-        iframe.src = item.src;
-        iframe.style.display = "block";
-        setTimeout(nextMedia, item.duration || 10000);
-      }
-    }
-
-    function nextMedia() {
-      index = (index + 1) % playlist.length;
-      showMedia();
-    }
-
-    showMedia();
-  </script>
+showMedia();
+</script>
 
 </body>
 </html>
