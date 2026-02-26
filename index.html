@@ -39,9 +39,11 @@
 
   <div class="slideshow">
     <img id="media-image">
-    <video id="media-video" muted>
+    <video id="media-video" muted playsinline>
       <source id="video-source" type="video/mp4">
     </video>
+
+  
     <iframe id="media-iframe"></iframe>
   </div>
 
@@ -50,8 +52,8 @@
       { type: "video", src: "aiaudit.mp4" },
       { type: "image", src: "ss1.png", duration: 10000 },
 
-     
-      { type: "web", src: "https://lookerstudio.google.com/embed/reporting/c89202ab-f65d-4545-afbe-6f4513733be8/page/p_oz84hpwm0d", duration: 10000 },
+      
+      { type: "web", src: "https://lookerstudio.google.com/embed/reporting/c89202ab-f65d-4545-afbe-6f4513733be8/page/p_oz84hpwm0d", duration: 15000 },
 
       { type: "video", src: "cloudcomputing.mp4" },
       { type: "image", src: "ss2.png", duration: 10000 },
@@ -67,18 +69,15 @@
     const videoSource = document.getElementById("video-source");
     const iframe = document.getElementById("media-iframe");
 
-    function hideAll() {
+    function showMedia() {
+      const item = playlist[index];
+
       img.style.display = "none";
       video.style.display = "none";
       iframe.style.display = "none";
 
       video.pause();
       video.currentTime = 0;
-    }
-
-    function showMedia() {
-      const item = playlist[index];
-      hideAll();
 
       if (item.type === "image") {
         img.src = item.src;
@@ -94,6 +93,7 @@
         video.onended = nextMedia;
       }
 
+     
       else if (item.type === "web") {
         iframe.src = item.src;
         iframe.style.display = "block";
